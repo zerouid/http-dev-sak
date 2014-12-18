@@ -1,0 +1,13 @@
+{
+  "name": "http-dev-sak",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zerouid/http-dev-sak.git",
+    "branch": "",
+    "SHA": ""
+  },
+  "devDependencies": {
+    "node-webkit-builder": "^1.0.0"
+  }
+}
