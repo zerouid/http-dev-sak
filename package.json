@@ -16,7 +16,9 @@
   "dependencies": {},
   "devDependencies": {
     "async": "latest",
-    "unzip": "latest"
+    "fs-extra": "^0.13.0",
+    "unzip": "zerouid/node-unzip",
+    "pcap": "latest"
   },
   "scripts": {
     "pack": "node tools/build.js"

@@ -1,7 +1,7 @@
 /*jslint node: true, regexp: true*/
 'use strict';
 var http = require('http'),
-    fs = require('fs'),
+    fs = require('fs-extra'),
     path = require('path'),
     unzip = require('unzip'),
     async = require('async'),
@@ -9,31 +9,26 @@ var http = require('http'),
 
 var version = 'v0.11.3',
     dl_base = 'http://dl.node-webkit.org/',
-    build_dir = path.resolve('./build/'),
+    build_dir = './build/',
     nw_zip = 'node-webkit-' + version + '-osx-x64.zip',
+    app_path = build_dir + pkg_cfg.name + '.app',
     app_dir_match = /^[^\/]*\/(node-webkit\.app)(\/.*)$/i,
-    plist_replace = {
-        'CFBundleName': pkg_cfg.name,
-        'CFBundleDisplayName': pkg_cfg.name,
-        'CFBundleVersion': pkg_cfg.version,
-        'CFBundleShortVersionString': pkg_cfg.version
-//        'NSHumanReadableCopyright': 'Ivan Minchev'
-    };
-
-function ensureDir(dir, callback) {
-    fs.exists(dir, function (exists) {
-        if (exists) { return callback(null); }
-        var parent = path.dirname(dir);
-        ensureDir(parent, function (err) {
-            if (err) { callback(err); }
-            fs.mkdir(dir, function (err) {
-                callback(err);
-            });
-        });
-    });
-}
+    customizations_all = [
+        { src: 'icon.icns', dest: '/Contents/Resources/nw.icns', op: fs.copy },
+        { src: 'Info.plist', dest: '/Contents/Info.plist', op: fs.copy }
+    ],
+    customizations_dev = [{ src: '.', dest: '/Contents/Resources/app.nw', op: fs.symlink }],
+    customizations_rel = [
+        { src: './app', dest: '/Contents/Resources/app.nw/app', op: fs.copy },
+        { src: './package.json', dest: '/Contents/Resources/app.nw/package.json', op: fs.copy }
+    ];
 
 async.waterfall([
+    //Cleanup
+    function (cb) {
+        console.log('Cleaning up...');
+        fs.remove(app_path, cb);
+    },
     //Check if package was already downloaded
     function (cb) {
         console.log('Checking if cached...');
@@ -50,7 +45,7 @@ async.waterfall([
         } else {
             console.log('Creating temp dir...');
             var tmpdir = path.dirname(filepath);
-            ensureDir(tmpdir, function (err) {
+            fs.ensureDir(tmpdir, function (err) {
                 console.log('Temp dir: ' + tmpdir + ' - created!');
                 cb(err, filepath, cached);
             });
@@ -78,14 +73,13 @@ async.waterfall([
     },
     function (filepath, cb) {
         console.log('Unziping ' + filepath + ' ...');
-        var app_path = build_dir + pkg_cfg.name + '.app';
         fs.createReadStream(filepath)
             .pipe(unzip.Parse())
             .on('error', function (err) { cb(err); })
             .on('entry', function (entry) {
                 if (app_dir_match.test(entry.path)) {
                     var dest_path = entry.path.replace(app_dir_match, app_path + '$2');
-                    ensureDir(path.dirname(dest_path), function (err) {
+                    fs.ensureDir(path.dirname(dest_path), function (err) {
                         if (err) {
                             cb(err);
                         } else {
@@ -96,15 +90,34 @@ async.waterfall([
                     entry.autodrain();
                 }
             })
-            .on('end', function () { cb(null, app_path); });
+            .on('attrs', function (filename, mode) {
+                if (app_dir_match.test(filename)) {
+                    var dest_path = filename.replace(app_dir_match, app_path + '$2');
+                    fs.chmod(dest_path, mode, function (err) {
+                        if (err) { cb(err); }
+                    });
+                }
+            })
+            .on('close', function () { console.log('Unzip - Done.'); cb(null, app_path); });
     },
     function (app_dir, cb) {
-        fs.createReadStream('icon.icns').pipe(fs.createWriteStream(app_dir + '/Contents/Resources/nw.icns')).on('error', function (err) { cb(err); });
+        console.log('Copy customizations...');
+        var customs = customizations_all.concat(customizations_dev);
+        async.each(customs, function (file, callback) {
+            file.op(path.resolve(file.src), path.resolve(app_dir + file.dest), function (err) {
+                if (err) {
+                    callback(err);
+                } else {
+                    console.log(file.src + ' to ' + file.dest + ' - Done.');
+                    callback();
+                }
+            });
+        }, cb);
     }
 ], function (err, result) {
     if (err) {
         console.error(err);
     } else {
-        console.log('Done.');
+        console.log('All Done.');
     }
 });
