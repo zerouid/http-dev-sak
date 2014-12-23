@@ -1,13 +1,24 @@
 {
   "name": "http-dev-sak",
   "version": "0.0.1",
+  "main": "app/index.html",
+  "window": {
+    "toolbar": true,
+    "width": 800,
+    "height": 600
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/zerouid/http-dev-sak.git",
     "branch": "",
     "SHA": ""
   },
+  "dependencies": {},
   "devDependencies": {
-    "node-webkit-builder": "^1.0.0"
+    "async": "latest",
+    "unzip": "latest"
+  },
+  "scripts": {
+    "pack": "node tools/build.js"
   }
 }
