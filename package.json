@@ -16,9 +16,10 @@
   "dependencies": {},
   "devDependencies": {
     "async": "latest",
-    "fs-extra": "^0.13.0",
+    "fs-extra": "latest",
     "unzip": "zerouid/node-unzip",
-    "pcap": "latest"
+    "http-dev-sak-osx-native": "zerouid/http-dev-sak-osx-native",
+    "pcap": "zerouid/node_pcap"
   },
   "scripts": {
     "pack": "node tools/build.js"

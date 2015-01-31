@@ -1,0 +1,5 @@
+{
+    "server": {
+        "socket_file": '/var/run/pcap_server.socket'
+    }
+}

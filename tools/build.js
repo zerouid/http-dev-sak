@@ -7,7 +7,7 @@ var http = require('http'),
     async = require('async'),
     pkg_cfg = require('../package.json');
 
-var version = 'v0.11.3',
+var version = 'v0.11.5',
     dl_base = 'http://dl.node-webkit.org/',
     build_dir = './build/',
     nw_zip = 'node-webkit-' + version + '-osx-x64.zip',
