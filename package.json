@@ -13,13 +13,15 @@
     "branch": "",
     "SHA": ""
   },
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
+    "bson": "~0.2.18",
     "async": "latest",
-    "fs-extra": "latest",
-    "unzip": "zerouid/node-unzip",
     "http-dev-sak-osx-native": "zerouid/http-dev-sak-osx-native",
     "pcap": "zerouid/node_pcap"
+  },
+  "devDependencies": {
+    "fs-extra": "latest",
+    "unzip": "zerouid/node-unzip"
   },
   "scripts": {
     "pack": "node tools/build.js"
