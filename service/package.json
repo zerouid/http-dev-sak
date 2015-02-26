@@ -1,0 +1,8 @@
+{
+  "name": "pcap-service",
+  "main": "index.html",
+  "node-main": "pcap_server.js",
+  "window": {
+    "show": true
+  }
+}

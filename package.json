@@ -14,16 +14,35 @@
     "SHA": ""
   },
   "dependencies": {
-    "bson": "~0.2.18",
     "async": "latest",
+    "bson": "~0.2.18",
     "http-dev-sak-osx-native": "zerouid/http-dev-sak-osx-native",
-    "pcap": "zerouid/node_pcap"
+    "material-ui": "^0.7.0",
+    "pcap": "zerouid/node_pcap",
+    "react": "^0.12.2",
+    "react-tap-event-plugin": "^0.1.4"
   },
   "devDependencies": {
+    "browserify": "^9.0.3",
     "fs-extra": "latest",
+    "glob": "^4.4.0",
+    "less": "^2.4.0",
+    "nw-gyp": "^0.12.4",
+    "reactify": "^1.0.0",
     "unzip": "zerouid/node-unzip"
   },
   "scripts": {
-    "pack": "node tools/build.js"
+    "pack": "node tools/build.js",
+    "install": "node tools/rebuild_deps.js"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "reactify",
+        {
+          "es6": true
+        }
+      ]
+    ]
   }
 }

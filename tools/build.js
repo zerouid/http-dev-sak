@@ -5,12 +5,17 @@ var http = require('http'),
     path = require('path'),
     unzip = require('unzip'),
     async = require('async'),
+    log = require('util').log,
     pkg_cfg = require('../package.json');
 
-var version = 'v0.11.5',
-    dl_base = 'http://dl.node-webkit.org/',
+var
+//version = 'v0.11.5',
+//dl_base = 'http://dl.node-webkit.org/',
+//nw_zip = 'node-webkit-' + version + '-osx-x64.zip',
+    version = 'v0.12.0-alpha3',
+    dl_base = 'http://dl.nwjs.io/',
+    nw_zip = 'nwjs-' + version + '-osx-x64.zip',
     build_dir = './build/',
-    nw_zip = 'node-webkit-' + version + '-osx-x64.zip',
     app_path = build_dir + pkg_cfg.name + '.app',
     app_dir_match = /^[^\/]*\/(node-webkit\.app)(\/.*)$/i,
     customizations_all = [
@@ -26,15 +31,15 @@ var version = 'v0.11.5',
 async.waterfall([
     //Cleanup
     function (cb) {
-        console.log('Cleaning up...');
+        log('Cleaning up...');
         fs.remove(app_path, cb);
     },
     //Check if package was already downloaded
     function (cb) {
-        console.log('Checking if cached...');
+        log('Checking if cached...');
         var filepath = build_dir + 'tmp/' + nw_zip;
         fs.exists(filepath, function (exists) {
-            console.log('Cached: ' + exists);
+            log('Cached: ' + exists);
             cb(null, filepath, exists);
         });
     },
@@ -43,10 +48,10 @@ async.waterfall([
         if (cached) {
             cb(null, filepath, cached);
         } else {
-            console.log('Creating temp dir...');
+            log('Creating temp dir...');
             var tmpdir = path.dirname(filepath);
             fs.ensureDir(tmpdir, function (err) {
-                console.log('Temp dir: ' + tmpdir + ' - created!');
+                log('Temp dir: ' + tmpdir + ' - created!');
                 cb(err, filepath, cached);
             });
         }
@@ -57,10 +62,10 @@ async.waterfall([
         } else {
             var url = dl_base + version + '/' + nw_zip,
                 file = fs.createWriteStream(build_dir + 'tmp/' + nw_zip);
-            console.log('Downloading package: ' + url + ' to ' + filepath + ' ...');
+            log('Downloading package: ' + url + ' to ' + filepath + ' ...');
 
             file.on('finish', function () {
-                console.log('Download complete.');
+                log('Download complete.');
                 cb(null, filepath);
             });
 
@@ -72,7 +77,7 @@ async.waterfall([
         }
     },
     function (filepath, cb) {
-        console.log('Unziping ' + filepath + ' ...');
+        log('Unziping ' + filepath + ' ...');
         fs.createReadStream(filepath)
             .pipe(unzip.Parse())
             .on('error', function (err) { cb(err); })
@@ -98,17 +103,17 @@ async.waterfall([
                     });
                 }
             })
-            .on('close', function () { console.log('Unzip - Done.'); cb(null, app_path); });
+            .on('close', function () { log('Unzip - Done.'); cb(null, app_path); });
     },
     function (app_dir, cb) {
-        console.log('Copy customizations...');
+        log('Copy customizations...');
         var customs = customizations_all.concat(customizations_dev);
         async.each(customs, function (file, callback) {
             file.op(path.resolve(file.src), path.resolve(app_dir + file.dest), function (err) {
                 if (err) {
                     callback(err);
                 } else {
-                    console.log(file.src + ' to ' + file.dest + ' - Done.');
+                    log(file.src + ' to ' + file.dest + ' - Done.');
                     callback();
                 }
             });
@@ -118,6 +123,6 @@ async.waterfall([
     if (err) {
         console.error(err);
     } else {
-        console.log('All Done.');
+        log('All Done.');
     }
 });

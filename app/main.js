@@ -2,7 +2,10 @@
 'use strict';
 
 
-var gui = require('nw.gui');
+var gui = require('nw.gui'),
+    React = require('react'),
+    mui = require('material-ui'),
+    RaisedButton = mui.RaisedButton;
 
 var win = gui.Window.get(),
     nativeMenuBar = new gui.Menu({ type: "menubar" });
@@ -40,3 +43,5 @@ menu.append(new gui.MenuItem({
 //    menu.append(new gui.MenuItem({ type: 'checkbox', label: dev }));
 //});
 tray.menu = menu;
+
+
