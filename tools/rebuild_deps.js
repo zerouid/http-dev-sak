@@ -10,7 +10,7 @@ var glob = require('glob'),
 var modspath = path.resolve(__dirname + '/../node_modules'),
     nwgyp = path.resolve(modspath + '/.bin/nw-gyp');
 
-glob(modspath + '/**/*.gyp', {}, function (err, files) {
+glob(modspath + '/**/binding.gyp', {}, function (err, files) {
     async.each(files, function (f, cb) {
         log('Found gyp file: ' + f);
         var dir = path.dirname(f);

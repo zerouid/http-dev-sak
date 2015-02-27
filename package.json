@@ -33,7 +33,8 @@
   },
   "scripts": {
     "pack": "node tools/build.js",
-    "install": "node tools/rebuild_deps.js"
+    "prepublish": "node tools/rebuild_deps.js",
+    "refresh": "node tools/rebuild_app.js"
   },
   "browserify": {
     "transform": [

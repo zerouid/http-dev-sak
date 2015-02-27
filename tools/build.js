@@ -17,7 +17,7 @@ var
     nw_zip = 'nwjs-' + version + '-osx-x64.zip',
     build_dir = './build/',
     app_path = build_dir + pkg_cfg.name + '.app',
-    app_dir_match = /^[^\/]*\/(node-webkit\.app)(\/.*)$/i,
+    app_dir_match = /^[^\/]*\/(nwjs\.app)(\/.*)$/i,
     customizations_all = [
         { src: 'icon.icns', dest: '/Contents/Resources/nw.icns', op: fs.copy },
         { src: 'Info.plist', dest: '/Contents/Info.plist', op: fs.copy }
